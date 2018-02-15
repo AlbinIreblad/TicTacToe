@@ -11,23 +11,46 @@ const boxes = document.querySelector('ul.boxes');
 
 const finish = document.getElementById('finish');
 const winner = document.querySelector('#finish header p');
+const newgame = document.querySelector('#finish .button');
+
+const winnerCalc = [[0, 1, 2],
+                    [3, 4, 5],
+                    [6, 7, 8],
+                    [0, 3, 6],
+                    [1, 4, 7],
+                    [2, 5, 8],
+                    [0, 4, 8],
+                    [2, 4, 6]];
+let o = [];
+let x = [];
+DisplayScene(startscene, board, finish);
+
+
 player1.className += ' active';
-startbutton.onclick = Starting
+
+
+startbutton.addEventListener('click', function(){
+    DisplayScene(board, startscene, finish);
+});
+newgame.addEventListener('click', function(){
+    DisplayScene(board, startscene, finish);
+    box.forEach(function (box1){
+       box1.className = 'box'; 
+    });
+    o = [];
+    x = [];
+    counter = 0;
+});
 
 function DisplayScene(see, no1, no2) {
     see.style = 'block';
     no1.style.display = 'none';
     no2.style.display = 'none';
-
 }
 
-function Starting() {
-    DisplayScene(board, startscene, finish);
-};
 
-document.addEventListener("DOMContentLoaded", function () {
-    DisplayScene(startscene, board, finish);
-});
+
+
 
 boxes.addEventListener('mouseover', function (event) {
 
@@ -45,20 +68,49 @@ boxes.addEventListener('click', function (event) {
     if (counter === 8) {
         DisplayScene(finish, board, startscene);
         finish.className += ' screen-win-tie';
-        winner.textContent = 'its a tie';
+        winner.textContent = "It's a Tie!";
         counter = 0;
     }
     if (!event.target.classList.contains('selected')) {
         counter += 1;
         if (player1.className === 'players active') {
+            o.push(event.target.id.replace('box', ''));
+            o.sort();
+            CompareArray(o, 'o');
             event.target.className += " box-filled-1 selected";
             player2.className += ' active';
             player1.className = 'players'
 
         } else {
+            x.push(event.target.id.replace('box', ''));
+            x.sort();
+            CompareArray(x, 'x');
+            event.target.className += " box-filled-2 selected";
             player1.className += ' active';
             player2.className = 'players'
-            event.target.className += " box-filled-2 selected";
         }
     }
 });
+
+function CompareArray(XorO, string) {
+    winnerCalc.forEach(function (arr) {
+        var e = 0;
+        XorO.forEach(function (number) {
+           arr.forEach(function(arrnum){
+                if (number == arrnum) {
+                e++;
+                console.log(e);
+                    if(e === 3){
+                        winner.textContent = 'Winner';
+                        if(string == 'x')
+                            finish.className += ' screen-win-two';
+                        else
+                            finish.className += ' screen-win-one';
+                        DisplayScene(finish, board, startscene);
+
+                    }
+                }
+           });
+        });
+    });
+}
